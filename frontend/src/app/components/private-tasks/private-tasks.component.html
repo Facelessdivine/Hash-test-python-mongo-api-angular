@@ -1,0 +1,26 @@
+<h1 class="mx-auto" style="width: 200px;">USUARIOS</h1>
+<div *ngIf="show" class="alert alert-dismissible alert-success">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <strong>Well done!</strong> You successfully {{method}} <a href="#" class="alert-link">{{response}}</a>.
+</div>
+<form>
+    <table class="table">
+        <thead>
+          <tr >
+            <th scope="col">#</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Editar</th>
+            <th scope="col">Eliminar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let users of this.auth.DatosUser; let i = index">
+            <th scope="row">{{i+1}}</th>
+            <td>{{ users.username}}</td>
+            <!-- <td>{{ users._id.$oid}}</td> -->
+            <td> <button (click)="update(users._id.$oid)" class="btn btn-primary" style="margin-left: 75% auto">Editar</button></td>
+            <td> <button (click)="deleteUsers(users.username)" class="btn btn-danger">Eliminar</button></td>
+          </tr>
+        </tbody>
+      </table>
+</form>

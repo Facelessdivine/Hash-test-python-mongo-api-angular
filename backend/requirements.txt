@@ -1,0 +1,9 @@
+dnspython==2.0.0
+Flask==1.1.2
+Flask-PyMongo==2.3.0
+dump-env==1.2.0
+Jinja2==2.11.2
+numpy==1.18.5
+pymongo==3.11.0
+pycryptodome==3.9.8
+virtualenv==20.0.33

@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col-md-4 mx-auto">
+        <div *ngIf="show" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-app-indicator" fill="red" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1H5.5z"/>
+                    <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                  </svg>
+              <strong class="mr-auto ml-2">Error</strong>
+              <small>Just now
+              </small>
+              <button (click)="show = false" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="toast-body">
+              {{response}}
+            </div>
+          </div>
+        <div class="card">
+            <div class="card-header">
+                SignIn
+            </div>
+            </div>
+            <div class="card-body">
+                <form (submit)="signIn()"> 
+                    <div class="form-group"> <!-- Vas a llenarme el dato del componente user a email -->
+                        <input type="text" [(ngModel)]="user.username" name="username" class="form-control" placeholder="Username" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" [(ngModel)]="user.password" name="password" class="form-control" placeholder="Password" required>
+                    </div>
+                    <!-- <div class="form-group">
+                        <input type="password" name="password" class="form-control" placeholder="Password" required autofocus>
+                    </div> -->
+                    <button  class="btn btn-primary btn-block">
+                        SignIn
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+    
