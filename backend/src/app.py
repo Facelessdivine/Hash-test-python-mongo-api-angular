@@ -88,6 +88,7 @@ def login():
         user = db.c_users.users.find_one({'username':username})# se Define una variable con la consulta para ver si el usiario existe buscandolo por medio del username o nombre de usuario
         password = request.json['password'].encode()#Se define esta variable con lo que llega de la petición en formato json, pero en este caso al mismo tiempo la contraseña que envía el usuario desde su registro es convertida en Bytes para poder se operada por la función de Hash más adelante
         hashed_password = hashlib.pbkdf2_hmac('sha512', password, salt, 100000).hex()#Utilizamos la función Hash para cifrar la contraseña ingresada por el usuario utilizando como llave el salt que es obtenido desde el archivo .env, llamado anteriormente usando sha512 como estandar de cirfrado al mismo tiempo que se usa la función hex para convertir en string lo que se le envía como bytes después de la función
+        
         if user != None and hashed_password == user['password']:
                 return {'message': 'Login Success',
                         'response': 'welcome '+ username} #En caso de que la variable user no sea None, es decir, que la consulta haya sido un exito y ese usuario si exista dentro de la base de datos Y que  el resultado de cifrar la contaseña del usuario conincida con la cifrada dentro del objeto de la base de datos entonces le damos acceso y enviamos la respuesta de Login satisfactorio y le damos la bienvenia
@@ -103,6 +104,6 @@ def not_found(error=None):
                 'status': 404
         }) #Se define una respuesta para decir el tipo de error que se capturó
         response.status_code = 404 #Definimos el mensaje del servidor de error 404 para que nos diga algo específico y no solo erro 505 o status 200
-        return response y se retorna la función
+        return response #y se retorna la función
 if __name__ == "__main__":
         app.run(load_dotenv=True) #Se ejecuta la aplicación flask, enviándole un parámetro el cual quiere decir que debe cargar su configuración de los archivos .env o .flaskenv, el cuál está en la raíz del proyecto, esto es útil para indicarle la ruta de la aplicación principal que va a ejecutar el comando Flask run el entorno de flask que puede ser Desarrollo o producción (development or production) el modo de debug que es para que nos muestre una definicón detallada de los errores en caso de que existan y el puerto en el que se va a establecer el servidor, por defecto flask utiliza el 5000, pero es posible cambiarlo directamente en el archivo .flaskenv
