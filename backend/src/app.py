@@ -1,5 +1,5 @@
 from flask import Flask, request, Response # Se importan las librerías del framework para peticionoes y respuestas del servidor
-from flask_pymongo import pymongo # Librería para la conexión con la base de datos MongoDB
+from flask_pymongo import pymongo # Librería para la conexión con la base de datos MongoDB 
 import hashlib # Librería para hacer un Hash de contraseñas en la base de datos al momento de crear una cuenta o iniciar sesión
 import os # Librería para obtener variables de entorno de otros archivos
 from  dotenv import load_dotenv # Librería para cargar las variables de entorno existentes
