@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { NgForm } from '@angular/forms';
 @Component({
   selector: 'app-signin',
   templateUrl: './signin.component.html',
@@ -27,13 +28,14 @@ export class SigninComponent implements OnInit {
   ngOnInit() {
   }
   
-  signIn(){
+  signIn(signIn: NgForm){
     this.authService.signIn(this.user)
     .subscribe( res => {
       // console.log(res);
       if(res.message == "Login failed"){
       this.response= res.response
       this.show = true
+      signIn.resetForm()
       } else {
         localStorage.setItem('token', res.token);
         this.router.navigate(['/private-tasks']);

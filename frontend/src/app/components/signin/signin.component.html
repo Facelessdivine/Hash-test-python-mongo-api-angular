@@ -23,7 +23,7 @@
             </div>
             </div>
             <div class="card-body">
-                <form (submit)="signIn()"> 
+                <form #signin="ngForm" (submit)="signIn(signin)"> 
                     <div class="form-group"> <!-- Vas a llenarme el dato del componente user a email -->
                         <input type="text" [(ngModel)]="user.username" name="username" class="form-control" placeholder="Username" required autofocus>
                     </div>

@@ -67,27 +67,30 @@ def create_user():
         # Receiving data
         username = request.json['username'] #Se define esta variable con lo que llega de la petición en formato json
         user = db1.find_one({'username':username}) # se Define una variable con la consulta para ver si el usiario que se quiere actualizar existe buscandolo por medio del username o nombre de usuario
+        password = request.json['password'] #Se define esta variable con lo que llega de la petición en formato json, pero en este caso al mismo tiempo la contraseña que envía el usuario desde su registro 
+        c_password = request.json['c_password']
+        if c_password == password:
+                if user == None and password: #En caso de que el usuario que se quiere registrar ya exista, se envia una respuesta directamente para decirle al usuario que ese nombre de usuario ya está registrado
+                        pvk,pbk, cipher_password = Generate_keys(password) #Generacion de llave privada y pública para este usuario y al mismo tiempo se cifra la contraseña
+                        if cipher_password: #En caso de que el nombre de usuario y el password hayan sido recibidos, es decir que desde el request tengan un valor enviado por el usuario
+                                idk = db2.insert({'public_key': pbk, 'private_key': pvk})
 
-        password = request.json['password'].encode()#Se define esta variable con lo que llega de la petición en formato json, pero en este caso al mismo tiempo la contraseña que envía el usuario desde su registro es convertida en Bytes para poder se operada por la función de Hash más adelante
-        if user == None and password: #En caso de que el usuario que se quiere registrar ya exista, se envia una respuesta directamente para decirle al usuario que ese nombre de usuario ya está registrado
-                pvk,pbk, cipher_password = Generate_keys(password) #Generacion de llave privada y pública para este usuario y al mismo tiempo se cifra la contraseña
-                if cipher_password: #En caso de que el nombre de usuario y el password hayan sido recibidos, es decir que desde el request tengan un valor enviado por el usuario
-                        idk = db2.insert({'public_key': pbk, 'private_key': pvk})
-
-                        idu =  db1.insert(
-                                {'username': username, 'password': cipher_password, 'key': str(idk)}
-                        ) #Definimos la variable id por el objetod de mongo que es generado después de insertar la contraseña cifrada y el nombre de usuario en la base de datos en la colección de usuarios
-                        response = {
-                                'id': str(idu), #Es necesario hacer esto, ya que si estamos definiendo un json, no puede haber un objeto, es decir, todo debe estar en formato string
-                                'username': username, #Guardamos en el json el nombre de usuario
-                                'password': cipher_password #Guardamos en el json la contraseña cifradad
-                        }
-                        return response #Se devuelvee el json anterior
+                                idu =  db1.insert(
+                                        {'username': username, 'password': cipher_password, 'key': str(idk)}
+                                ) #Definimos la variable id por el objetod de mongo que es generado después de insertar la contraseña cifrada y el nombre de usuario en la base de datos en la colección de usuarios
+                                response = {
+                                        'id': str(idu), #Es necesario hacer esto, ya que si estamos definiendo un json, no puede haber un objeto, es decir, todo debe estar en formato string
+                                        'username': username, #Guardamos en el json el nombre de usuario
+                                        'password': cipher_password #Guardamos en el json la contraseña cifradad
+                                }
+                                return response #Se devuelvee el json anterior
+                        else:
+                                return not_found() #en caso de que no se envie alguno de los datos se llama a la función de not_found que le indicará al servidor como una respuesta el código de estado del error
+                        return {'message': 'Received'} #En caso de que todo haya salido bien, se envia una respuesta de recibido que indica que el usuario ha sido creado satisfactoriamente
                 else:
-                        return not_found() #en caso de que no se envie alguno de los datos se llama a la función de not_found que le indicará al servidor como una respuesta el código de estado del error
-                return {'message': 'Received'} #En caso de que todo haya salido bien, se envia una respuesta de recibido que indica que el usuario ha sido creado satisfactoriamente
+                        return {'alert': 'Username is already taken, try to login or choose another one'} #Esta respuesta se envía en caso de que el nombre de usuario que se quiere registrar ya se encuentre en la base de datos (esta respuesta será capturadad por el Frontend para mostrar alertas indicando al  usuario el motivo del error al registrar)
         else:
-                return {'alert': 'Username is already taken, try to login or choose another one'} #Esta respuesta se envía en caso de que el nombre de usuario que se quiere registrar ya se encuentre en la base de datos (esta respuesta será capturadad por el Frontend para mostrar alertas indicando al  usuario el motivo del error al registrar)
+                return {'alert': 'Passwords do not match'}
 
 
 @app.route('/signin',methods=['POST']) #Definimos el método login a través de POST
@@ -119,6 +122,7 @@ def not_found(error=None):
 if __name__ == "__main__":
         app.run(load_dotenv=True) #Se ejecuta la aplicación flask, enviándole un parámetro el cual quiere decir que debe cargar su configuración de los archivos .env o .flaskenv, el cuál está en la raíz del proyecto, esto es útil para indicarle la ruta de la aplicación principal que va a ejecutar el comando Flask run el entorno de flask que puede ser Desarrollo o producción (development or production) el modo de debug que es para que nos muestre una definicón detallada de los errores en caso de que existan y el puerto en el que se va a establecer el servidor, por defecto flask utiliza el 5000, pero es posible cambiarlo directamente en el archivo .flaskenv
 def Generate_keys(message):
+        message = message.encode()
         private_key = RSA.generate(1024)
         public_key = private_key.publickey()
         private_pem = private_key.export_key(format="DER").hex()

@@ -22,17 +22,17 @@
                 SignUp
             </div>
             <div class="card-body">
-                <form (submit)="signUp()">
-                    <div class="form-group"> <!-- Vas a llenarme el dato del componente user a email -->
-                        <input type="text" [(ngModel)]="user.username" name="username" class="form-control" placeholder="Username" required autofocus>
+                <form  (submit)="signUp()">
+                    <div class="form-group"> 
+                        <input type="text" [(ngModel)]="user.username" name="username" #username class="form-control" placeholder="Username" required autofocus>
                     </div>
 
                     <div class="form-group">
-                        <input type="password" [(ngModel)]="user.password" name="password" class="form-control" placeholder="Password" required autofocus>
+                        <input type="password" #password [(ngModel)]="user.password" name="password" class="form-control" placeholder="Password" required autofocus>
                     </div>
-                    <!-- <div class="form-group">
-                        <input type="password" name="password" class="form-control" placeholder="Password" required autofocus>
-                    </div> -->
+                    <div class="form-group">
+                        <input type="password"  #c_password [(ngModel)]="user.c_password" name="c_password" class="form-control" placeholder="Confirm Password" required autofocus>
+                    </div>
                     <button type="submit" class="btn btn-primary btn-block">
                         Submits
                     </button>
