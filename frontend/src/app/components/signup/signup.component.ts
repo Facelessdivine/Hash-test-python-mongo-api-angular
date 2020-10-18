@@ -31,6 +31,7 @@ export class SignupComponent implements OnInit {
   }
   signUp(){
     this.authService.signUp(this.user)
+    
     .subscribe( res => {
       // console.log(res);
       if(res.alert){

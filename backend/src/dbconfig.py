@@ -7,4 +7,5 @@ PASSWORD = os.getenv('DB_PASSWORD')
 HOST = os.getenv('DB_HOST')
 NAME = os.getenv('DB_NAME')
 client = pymongo.MongoClient(f'mongodb+srv://{USER}:{PASSWORD}@{HOST}.mongodb.net/{NAME}?retryWrites=true')
-c_users = client.users
+c_users = client.users #users collection
+c_pvkpbk = client.keys #Keys collection
