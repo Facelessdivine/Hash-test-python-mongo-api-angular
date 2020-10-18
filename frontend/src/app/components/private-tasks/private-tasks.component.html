@@ -12,6 +12,8 @@
             <th scope="col">Usuario</th>
             <th scope="col">Editar</th>
             <th scope="col">Eliminar</th>
+            <th scope="col">Private key</th>
+            <th scope="col">Public key</th>
           </tr>
         </thead>
         <tbody>
@@ -21,8 +23,47 @@
             <!-- <td>{{ users._id.$oid}}</td> -->
             <td> <button (click)="update(users._id.$oid)" class="btn btn-primary" style="margin-left: 75% auto">Editar</button></td>
             <td> <button (click)="deleteUsers(users.username)" class="btn btn-danger">Eliminar</button></td>
+            <td><button (click)="getKeys(users._id.$oid); showkeypv = true;"
+                class="btn btn-info"> Mostrar </button></td>
+            <td><button (click)="getKeys(users._id.$oid); showkeypb = true"
+                class="btn btn-info"> Mostrar </button></td>
           </tr>
         </tbody>
       </table>
 </form>
+<div *ngIf="showkeypv" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="toast-header">
+      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-app-indicator" fill="red" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1H5.5z"/>
+          <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+        </svg>
+    <strong class="mr-auto ml-2">Private Key</strong>
+    <small>Just now
+    </small>
+    <button (click)="showkeypv = false" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="toast-body" width="100px" style ="word-wrap: break-word;">
+    <p>{{keys.private_key}}</p>
+  </div>
+  </div>
+<div *ngIf="showkeypb" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="toast-header">
+      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-app-indicator" fill="red" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1H5.5z"/>
+          <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+        </svg>
+    <strong class="mr-auto ml-2">Public Key</strong>
+    <small>Just now
+    </small>
+    <button (click)="showkeypb = false" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="toast-body" width="100px" style ="word-wrap: break-word;">
+    <p>{{keys.public_key}}</p>
+  </div>
+  </div>
+  
 </div>

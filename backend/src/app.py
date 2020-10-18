@@ -29,8 +29,19 @@ def get_user(id): #La función recibe el parámetro ID
         user = db1.find_one({'_id': ObjectId(id)}) # Hacemos una consulta a mongo para encontrar por medio de la Id proporcionada y luego es almacenada dentro de la variable user, esto es un objeto de Mongo DB que en caso de que la consulta devuelva algo tiene los datos de ese usuario, y en caso contrario el valor es None o Undefined en el caso del Frontend
         response = json_util.dumps(user) #Definimos la variable response en donde convertimos el objeto de mongo en un Json 
         return Response(response, mimetype= 'application/json') # Definimos el tipo de datos por el cuál se enviará la respuesta del servidor
-        
+@app.route('/keys/<id>', methods=['GET']) #Definimos la ruta para ver un usuario específico por medio del ID
+def get_user_keys(id): #La función recibe el parámetro ID
+        user = db1.find_one({'_id': ObjectId(id)}) # Hacemos una consulta a mongo para encontrar por medio de la Id proporcionada y luego es almacenada dentro de la variable user, esto es un objeto de Mongo DB que en caso de que la consulta devuelva algo tiene los datos de ese usuario, y en caso contrario el valor es None o Undefined en el caso del Frontend
+        # username = 'The', user['username']
 
+        keyid = user['key']
+        keys = db2.find_one({'_id': ObjectId(keyid)}) 
+        # pbk = keys['public_key']
+        # pvk = keys['private_key']
+        response = json_util.dumps(keys) #Definimos la variable response en donde convertimos el objeto de mongo en un Json
+        # response = jsonify({'message': 'Encription keys of '+ username, 'public_key': pbk, 'private_key': pvk })
+        # return Response(response, mimetype= 'application/json') # Definimos el tipo de datos por el cuál se enviará la respuesta del servidor
+        return response
 @app.route('/users/<username>', methods=['DELETE']) # Definimos la función de eliminar usuario a través de su Username el cual es único así que no deberia haber problema al utilizarlo en lugar del ID
 def delete_user(username): #La función recibe como parámetro el nombre del usuario 
         db1.delete_one({'username': username}) #Se elimina al usuario por medio del username en mongodb

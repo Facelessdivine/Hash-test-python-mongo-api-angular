@@ -19,7 +19,14 @@ export class PrivateTasksComponent implements OnInit {
     username: ''
     
   } 
+  keys = {
+    public_key: '',
+    private_key: '',
+  }
+
   show = false;
+  showkeypv = false;
+  showkeypb = false;
   method = '';
   response = '';
 
@@ -44,7 +51,7 @@ export class PrivateTasksComponent implements OnInit {
     }
   }
   
-  update(usuario){
+  update(usuario: string){
     let input = prompt(`Introduce el nuevo nombre de usuario`);
     this.user.id = usuario
     this.user.username = input;
@@ -61,6 +68,17 @@ export class PrivateTasksComponent implements OnInit {
     }, 5000);
   }
 
+
+  getKeys(id: any) {
+    let s = this.taskService.selectUserKeys
+    let resp = this.taskService.getKeys(id);
+    resp.subscribe( res => {
+      s = res;
+      this.keys.private_key = s.private_key
+      this.keys.public_key = s.public_key
+      // this.showkeys = true;
+    })
+  }
   getUsers() {
     let resp = this.auth.getUsers();
     resp.subscribe((res) => {

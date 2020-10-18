@@ -10,7 +10,7 @@ export class Private_taks_service {
 
   private URL = 'http://localhost:5000';
 
-  selectUser: any;
+  selectUserKeys: any;
   DatosUser: any[];
 
 
@@ -21,5 +21,8 @@ export class Private_taks_service {
     }
   DeleteUser(user){
         return this.http.delete<any>(this.URL + `/users/${user}`, user);
+    }
+  getKeys(id){
+        return this.http.get<any>(this.URL + `/keys/${id}`, id);
     }
 }
