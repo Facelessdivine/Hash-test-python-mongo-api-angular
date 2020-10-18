@@ -1,5 +1,5 @@
 from flask import Flask, request, Response # Se importan las librerías del framework para peticionoes y respuestas del servidor
-from flask_pymongo import pymongo # Librería para la conexión con la base de datos MongoDB
+from flask_pymongo import pymongo # Librería para la conexión con la base de datos MongoDB 
 import hashlib # Librería para hacer un Hash de contraseñas en la base de datos al momento de crear una cuenta o iniciar sesión
 import os # Librería para obtener variables de entorno de otros archivos
 from  dotenv import load_dotenv # Librería para cargar las variables de entorno existentes
@@ -17,18 +17,20 @@ app = Flask(__name__) # Se define el nombre de la aplicación con la variable __
 app.config['CORS_HEADERS'] = 'Content-Type' #Le decimos a Cors en qué formato va a recibir los headers (datos de las peticiones)
 CORS(app) #Se define el nombre de la App que utilizará cors el cual es otro objeto de flask
 cors = CORS(app, resources = {r"*":{"origins":"http://localhost:4200"}}) #Permitimos el orgien de nuestro servidor local de Frontend para que pueda recibir peticiones y datos desde ahí
+db1 = db.c_users.users #Users database using the users collecion variable
+# db2 = db.c_pvkpbk.keys #Users database using the users collecion variable
 
 
 @app.route('/users/<id>', methods=['GET']) #Definimos la ruta para ver un usuario específico por medio del ID
 def get_user(id): #La función recibe el parámetro ID
-        user = db.c_users.users.find_one({'_id': ObjectId(id)}) # Hacemos una consulta a mongo para encontrar por medio de la Id proporcionada y luego es almacenada dentro de la variable user, esto es un objeto de Mongo DB que en caso de que la consulta devuelva algo tiene los datos de ese usuario, y en caso contrario el valor es None o Undefined en el caso del Frontend
+        user = db1.find_one({'_id': ObjectId(id)}) # Hacemos una consulta a mongo para encontrar por medio de la Id proporcionada y luego es almacenada dentro de la variable user, esto es un objeto de Mongo DB que en caso de que la consulta devuelva algo tiene los datos de ese usuario, y en caso contrario el valor es None o Undefined en el caso del Frontend
         response = json_util.dumps(user) #Definimos la variable response en donde convertimos el objeto de mongo en un Json 
         return Response(response, mimetype= 'application/json') # Definimos el tipo de datos por el cuál se enviará la respuesta del servidor
         
 
 @app.route('/users/<username>', methods=['DELETE']) # Definimos la función de eliminar usuario a través de su Username el cual es único así que no deberia haber problema al utilizarlo en lugar del ID
 def delete_user(username): #La función recibe como parámetro el nombre del usuario 
-        db.c_users.users.delete_one({'username': username}) #Se elimina al usuario por medio del username en mongodb
+        db1.delete_one({'username': username}) #Se elimina al usuario por medio del username en mongodb
         response = jsonify({'message': 'User: '+ username + ' was deleted successfully'}) #Se define una variable con un valor en formato json para que el usuario sepa qué dato fue eliminado 
         return response # Se retorna la respuesta anteriormente definida
 
@@ -36,13 +38,13 @@ def delete_user(username): #La función recibe como parámetro el nombre del usu
 @app.route('/users/<id>', methods=['PUT']) #Definimos la función para actualizar a través del id del usuario a través del método PUT
 def update_user(id): #La función recibe el Id como parámetro
         username = request.json['username'] #Definimos el usuario por lo que está recibiendo en formato json en la petición, la cual es un objeto con los datos que envia el usuario y en este caso obtenemos en esta variable unicamente el nombre de usuario
-        user = db.c_users.users.find_one({'_id': ObjectId(id)}) # se Define una variable con la consulta para ver si el usiario que se quiere actualizar existe buscandolo por medio del ID
+        user = db1.find_one({'_id': ObjectId(id)}) # se Define una variable con la consulta para ver si el usiario que se quiere actualizar existe buscandolo por medio del ID
         # password = request.json['password'].encode()
         if user != None: #En caso de que no se encuentre el nombre de usuario de ese ID el valor de user es None, por lo tanto, lo siguiente solo podrá continuar si el dato no es None
                 if username: #Si está definido el usuario, es decir que si se ha enviado el dato Username a través de Json
                         # hashed_password = hashlib.pbkdf2_hmac('sha512', password, salt, 100000).hex()
                         usernameold = user['username'] #Guardamos en una variable el nombre que actualmente tiene el usuario en la base de datos (antes de actualizar)
-                        db.c_users.users.update_one({'_id': ObjectId(id)}, {'$set':{
+                        db1.update_one({'_id': ObjectId(id)}, {'$set':{
                         'username': username}}) #Actualizamos el lcampo username del usuario que coicida con la id que le llega como parámemtro y se define el nombre de usuario que llega por Json
                         response =  jsonify({'message': 'User: '+ usernameold + ' was updated successfully to '+ username}) #Se define la respuesta del servidor para que muestre al usuario el antiguo y el nuevo nombre de usuario después de haber actualizado
                         return response #Se envia la respuesta
@@ -52,7 +54,7 @@ def update_user(id): #La función recibe el Id como parámetro
 
 @app.route('/users', methods=['GET']) #Definimos la ruta para obtener todos los usuarios registrados en la base de datos
 def get_users():
-        users = db.c_users.users.find() #Hacemos una consulta sin argumentos a la colección de los usuario en la base de datos
+        users = db1.find() #Hacemos una consulta sin argumentos a la colección de los usuario en la base de datos
         response = json_util.dumps(users) #Y la respuesta es el objeto de Mongo pero convertido en Json
         return Response(response, mimetype='application/json') #Definimos el tipo de respuesta que se está enviando
 
@@ -61,12 +63,12 @@ def get_users():
 def create_user():
         # Receiving data
         username = request.json['username'] #Se define esta variable con lo que llega de la petición en formato json
-        user = db.c_users.users.find_one({'username':username}) # se Define una variable con la consulta para ver si el usiario que se quiere actualizar existe buscandolo por medio del username o nombre de usuario
+        user = db1.find_one({'username':username}) # se Define una variable con la consulta para ver si el usiario que se quiere actualizar existe buscandolo por medio del username o nombre de usuario
         password = request.json['password'].encode()#Se define esta variable con lo que llega de la petición en formato json, pero en este caso al mismo tiempo la contraseña que envía el usuario desde su registro es convertida en Bytes para poder se operada por la función de Hash más adelante
         if user == None: #En caso de que el usuario que se quiere registrar ya exista, se envia una respuesta directamente para decirle al usuario que ese nombre de usuario ya está registrado
                 if username and password: #En caso de que el nombre de usuario y el password hayan sido recibidos, es decir que desde el request tengan un valor enviado por el usuario
                         hashed_password = hashlib.pbkdf2_hmac('sha512', password, salt, 100000).hex() #Utilizamos la función Hash para cifrar la contraseña ingresada por el usuario utilizando como llave el salt que es obtenido desde el archivo .env, llamado anteriormente usando sha512 como estandar de cirfrado al mismo tiempo que se usa la función hex para convertir en string lo que se le envía como bytes después de la función
-                        id =  db.c_users.users.insert(
+                        id =  db1.insert(
                                 {'username': username, 'password': hashed_password}
                         ) #Definimos la variable id por el objetod de mongo que es generado después de insertar la contraseña cifrada y el nombre de usuario en la base de datos en la colección de usuarios
                         response = {
@@ -85,7 +87,7 @@ def create_user():
 @app.route('/signin',methods=['POST']) #Definimos el método login a través de POST
 def login():
         username = request.json['username'] #se define la variable username por el dato en json que llegue con la petición
-        user = db.c_users.users.find_one({'username':username})# se Define una variable con la consulta para ver si el usiario existe buscandolo por medio del username o nombre de usuario
+        user = db1.find_one({'username':username})# se Define una variable con la consulta para ver si el usiario existe buscandolo por medio del username o nombre de usuario
         password = request.json['password'].encode()#Se define esta variable con lo que llega de la petición en formato json, pero en este caso al mismo tiempo la contraseña que envía el usuario desde su registro es convertida en Bytes para poder se operada por la función de Hash más adelante
         hashed_password = hashlib.pbkdf2_hmac('sha512', password, salt, 100000).hex()#Utilizamos la función Hash para cifrar la contraseña ingresada por el usuario utilizando como llave el salt que es obtenido desde el archivo .env, llamado anteriormente usando sha512 como estandar de cirfrado al mismo tiempo que se usa la función hex para convertir en string lo que se le envía como bytes después de la función
         
