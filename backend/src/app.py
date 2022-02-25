@@ -8,12 +8,20 @@ from bson import json_util
 from bson.objectid import ObjectId
 import dbconfig as db
 from flask_cors import CORS, cross_origin
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 
 load_dotenv()
 
 salt = os.getenv('SALT').encode()
 
 app = Flask(__name__)
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["1000 per day", "100 per hour"]
+)
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 cors = CORS(app, resources={r"*": {"origins": "http://localhost:4200"}})
@@ -22,8 +30,9 @@ db2 = db.db_users.administrators
 db3 = db.db_users.developers
 
 @app.route('/restore', methods=['GET'])
+@limiter.limit("1/minute")
 def restore_db():
-    os.system("")
+    os.system('call script/restore.bat')
     response = {
                 'Message':'Successfully',
                 'Action': 'Restoring database'
@@ -71,6 +80,7 @@ def get_users():
 
 
 @app.route('/signup/<type>', methods=['POST'])
+@limiter.exempt
 def create_user(type):
     # 1 = usuarios 2 = administradors 3 = developers
     user = None
@@ -108,7 +118,8 @@ def create_user(type):
         return {'alert': 'Username is already taken, try to login or choose another one'}
 
 
-@app.route('/signin/users', methods=['POST'])
+@app.route('/signin/<type>', methods=['POST'])
+@limiter.exempt
 def login():
     username = request.json['username']
     user = db1.find_one({'username': username})
