@@ -25,9 +25,7 @@ limiter = Limiter(
 app.config['CORS_HEADERS'] = 'Content-Type'
 CORS(app)
 cors = CORS(app, resources={r"*": {"origins": "http://localhost:4200"}})
-db1 = db.db_users.users
-db2 = db.db_users.administrators
-db3 = db.db_users.developers
+
 
 @app.route('/restore', methods=['GET'])
 @limiter.limit("1/minute")
@@ -78,14 +76,16 @@ def get_users():
     response = json_util.dumps(users)
     return Response(response, mimetype='application/json')
 
-
+db1 = db.db_users.users
+db2 = db.db_users.administrators
+db3 = db.db_users.developers
 @app.route('/signup/<type>', methods=['POST'])
 @limiter.exempt
 def create_user(type):
     # 1 = usuarios 2 = administradors 3 = developers
-    user = None
     username = request.json['username']
     password = request.json['password'].encode()
+    user = None
     query = {'username': username}
     if type == "1":
         user = db1.find_one(query)
@@ -120,13 +120,19 @@ def create_user(type):
 
 @app.route('/signin/<type>', methods=['POST'])
 @limiter.exempt
-def login():
+def login(type):
+    user = None
     username = request.json['username']
-    user = db1.find_one({'username': username})
     password = request.json['password'].encode()
+    query = {'username': username}
+    if type == "1":
+        user = db1.find_one(query)
+    elif type == "2":
+        user = db2.find_one(query)
+    elif type == "3":
+        user = db3.find_one(query)
     hashed_password = hashlib.pbkdf2_hmac(
         'sha512', password, salt, 100000).hex()
-
     if user != None and hashed_password == user['password']:
         return {'message': 'Login Success',
                 'response': 'welcome ' + username}
